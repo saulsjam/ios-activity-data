@@ -8,6 +8,7 @@ Early exploration. Step count data extraction and schema inspection in progress.
 
 ## Working Notes
 - 2025-12-25: Created repository and decided to perform analysis in R.
+- 2025-12-27: Cloned repository locally and edited README from local environment to test git.
 
 ## Open Questions
 - What tool am I using to extract step and screen data.
