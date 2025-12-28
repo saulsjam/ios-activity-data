@@ -13,3 +13,6 @@ Early exploration. Step count data extraction and schema inspection in progress.
 
 ## Open Questions
 - What tool am I using to extract step and screen data.
+
+## Milestones
+- 2025-12-27: Health data extraction + schema discovery complete (see notes/healthdb-schema-discovery.md)
