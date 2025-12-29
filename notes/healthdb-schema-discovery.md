@@ -30,8 +30,11 @@ WHERE type = 'table'
 
 enabled targeted discovery of timestamp columns and candidate tables without relying on undocumented schema references.
 
+Step samples are identified by `samples.data_type = 7`. This was inferred by (a) integer-valued quantities, (b) high frequency among sample types, and (c) a lifetime SUM(quantity) of 29,327,899 steps across ~10 years (~8k/day), which is consistent with expected totals.
+
+Join path: `samples (data_id, start_date, end_date, data_type)` joins to `quantity_samples (data_id, quantity, ...)` on `data_id`.
+
 ## Remaining questions
 
-- How step count samples are distinguished from other quantity types
-- Which identifier or join path encodes the HealthKit data type
-- Whether provenance tables are required for correct filtering
+- How are `samples.start_date` and `samples.end_date` encoded for day-level aggregation?
+- Are other `sample.data_type` values relevant to my analysis and do they need to be decoded?
