@@ -34,7 +34,27 @@ Step samples are identified by `samples.data_type = 7`. This was inferred by (a)
 
 Join path: `samples (data_id, start_date, end_date, data_type)` joins to `quantity_samples (data_id, quantity, ...)` on `data_id`.
 
+Step samples are interval-based and vary in duration. Diagnostic checks show:
+- Average interval length ≈ 6 minutes.
+- Intervals longer than 15 minutes are rare (22 samples total).
+- A small number of very long intervals exist (multi-day), likely due to device sync or restore artifacts.
+
+A minority of step samples cross calendar-day boundaries when converted to local
+time. These samples account for ~277k steps, representing <1% of total lifetime
+steps (~29.3M).
+
+While proportional allocation across calendar days is conceptually appealing, its benefit is limited by the absence of per-sample timezone metadata. Because step timestamps are stored in absolute time and converted using a single assumed timezone, travel introduces uncertainty that outweighs sub-day allocation refinements.
+
+Given the rarity of long intervals, the small fraction of cross-midnight steps,
+and timezone ambiguity, daily aggregation assigns step samples to the calendar
+day corresponding to their `start_date` after local-time conversion. 
+
+Daily step totals can be reproduced by summing `quantity_samples.quantity`
+grouped by the local calendar date derived from `samples.start_date`
+(after Apple → Unix epoch conversion). This aggregation matches Health app
+daily totals on most days; discrepancies occur primarily on days with
+activity near midnight.
+
+
 ## Remaining questions
 
-- How are `samples.start_date` and `samples.end_date` encoded for day-level aggregation?
-- Are other `sample.data_type` values relevant to my analysis and do they need to be decoded?
