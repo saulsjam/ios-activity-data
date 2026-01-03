@@ -1,3 +1,4 @@
+# 01-load-daily-steps.R
 # Purpose:
 #   Extract daily step counts from healthdb_secure.sqlite.
 #
