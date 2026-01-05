@@ -27,14 +27,14 @@ steps_daily <- dbGetQuery(con,"
   SELECT
     date(DATETIME(s.start_date + APPLE_EPOCH_OFFSET, 'unixepoch', 'localtime')) AS date,
     SUM(qs.quantity) AS steps
-    FROM samples s
-    JOIN quantity_samples qs
-      ON s.data_id = qs.data_id
-    WHERE s.data_type = 7
-      AND s.end_date > s.start_date
-    GROUP BY date
-    ORDER BY date ASC
-                          ")
+  FROM samples s
+  JOIN quantity_samples qs
+    ON s.data_id = qs.data_id
+  WHERE s.data_type = 7
+    AND s.end_date > s.start_date
+  GROUP BY date
+  ORDER BY date ASC
+")
 
 dir.create("data", showWarnings = FALSE)
 
