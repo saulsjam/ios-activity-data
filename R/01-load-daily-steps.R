@@ -1,7 +1,10 @@
 # 01-load-daily-steps.R
 # Purpose:
 #   Extract daily step counts from healthdb_secure.sqlite.
-#
+# Input:
+#   healthdb_secure.sqlite
+# Output:
+#   data/steps_daily.csv
 # Notes:
 #   - Steps are identified by samples.data_type = 7
 #   - samples is joined to quantity_samples on data_id
@@ -18,9 +21,11 @@ stopifnot(nzchar(db_path))
 con <- dbConnect(SQLite(), dbname = db_path)
 on.exit(dbDisconnect(con), add = TRUE)
 
+APPLE_EPOCH_OFFSET <- 978307200
+
 steps_daily <- dbGetQuery(con,"
   SELECT
-    date(DATETIME(s.start_date + 978307200, 'unixepoch', 'localtime')) AS date,
+    date(DATETIME(s.start_date + APPLE_EPOCH_OFFSET, 'unixepoch', 'localtime')) AS date,
     SUM(qs.quantity) AS steps
     FROM samples s
     JOIN quantity_samples qs
@@ -28,7 +33,7 @@ steps_daily <- dbGetQuery(con,"
     WHERE s.data_type = 7
       AND s.end_date > s.start_date
     GROUP BY date
-    ORDER BY date DESC
+    ORDER BY date ASC
                           ")
 
 dir.create("data", showWarnings = FALSE)

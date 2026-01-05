@@ -1,5 +1,14 @@
 # 02-clean-daily-steps.R
 # Purpose: flag and remove HealthKit backfill "gap-anchor" days; write cleaned CSVs.
+# Input:
+#   data/steps_daily.csv
+# Outputs:
+#   data/steps_daily_flagged.csv
+#   data/steps_daily_clean.csv
+# Notes:
+#   Gap-anchor days are defined as the final recorded date preceding a multi-day
+#   gap in observations; these days accumulate steps over the gap and bias
+#   distributional and time-series statistics.
 
 steps_daily <- read.csv("data/steps_daily.csv", stringsAsFactors = FALSE)
 steps_daily$date  <- as.Date(steps_daily$date)
@@ -19,7 +28,7 @@ steps_daily$is_gap_anchor <- !is.na(steps_daily$gap_days) & steps_daily$gap_days
 total_missing_days <- sum(steps_daily$gap_days[steps_daily$gap_days > 1] - 1, na.rm = TRUE)
 
 # Cleaned dataset for plotting/trend analysis
-steps_daily_clean <- subset(steps_daily, !is_gap_anchor)
+steps_daily_clean <- subset(steps_daily, !is_gap_anchor, select = c(date, steps))
 
 dir.create("data", showWarnings = FALSE)
 write.csv(steps_daily, "data/steps_daily_flagged.csv", row.names = FALSE)

@@ -1,6 +1,18 @@
 # 03-plot-daily-steps.R
-# Purpose: plot daily step counts (faint points) + rolling average (bold line)
-# from cleaned CSV.
+# Purpose:
+#   Generate descriptive plots of cleaned daily step totals: time series with a
+#   rolling mean, a histogram with median reference, and month-of-year boxplots.
+# Input:
+#   data/steps_daily_clean.csv
+# Output:
+#   charts/steps_daily_timeseries_<window_days>d.png
+#   charts/steps_daily_histogram_b<binwidth>.png
+#   charts/steps_seasonality_boxplot_month_of_year.png
+# Notes:
+#   - window_days (default 90) smooths day-to-day noise while preserving seasonal
+#     and long-run variation.
+#   - Median is included in histogram to aid interpretation under skew/outliers.
+#   - Month-of-year boxplots summarize seasonality and variability across years.
 
 library(ggplot2)
 
@@ -26,7 +38,7 @@ p <- ggplot(steps_daily, aes(x = date)) +
   # foreground: rolling average as bold line
   geom_line(aes(y = steps_roll_avg), linewidth = 1.2, na.rm = TRUE) +
   labs(
-    title = "Daily Steps with 90-Day Rolling Average",
+    title = sprintf("Daily Steps with %d-Day Rolling Average", window_days),
     subtitle = "Cleaned data; Gap-anchor days excluded",
     x = "Date",
     y = "Steps"
@@ -39,7 +51,7 @@ ggsave(out_file, plot = p, width = 12, height = 7, dpi = 150)
 
 bin_width <- 1000
 
-median_steps = median(steps_daily$steps, na.rm = TRUE)
+median_steps <- median(steps_daily$steps, na.rm = TRUE)
 
 p_hist <- ggplot(steps_daily, aes(x = steps)) +
   geom_histogram(
@@ -78,7 +90,7 @@ ggsave(
 )
 
 
-# ---- Seasonality: average daily steps by month-of-year (all years pooled) ----
+# ---- Seasonality: boxplots by month (all years pooled) ----
 
 # Month-of-year as an ordered factor (Jan ... Dec)
 steps_daily$month_name <- factor(
@@ -86,7 +98,6 @@ steps_daily$month_name <- factor(
   levels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"),
   ordered = TRUE
 )
-
 
 p_season_box <- ggplot(steps_daily, aes(x = month_name, y = steps)) +
   geom_boxplot(outlier.alpha = 0.3, width = 0.7) +
