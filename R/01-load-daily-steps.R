@@ -21,11 +21,10 @@ stopifnot(nzchar(db_path))
 con <- dbConnect(SQLite(), dbname = db_path)
 on.exit(dbDisconnect(con), add = TRUE)
 
-APPLE_EPOCH_OFFSET <- 978307200
-
 steps_daily <- dbGetQuery(con,"
   SELECT
-    date(DATETIME(s.start_date + APPLE_EPOCH_OFFSET, 'unixepoch', 'localtime')) AS date,
+    date(DATETIME(s.start_date + 978307200, 'unixepoch', 'localtime')) AS date,
+    -- 978307200 = seconds between Unix epoch (1970-01-01) and Apple epoch (2001-01-01)
     SUM(qs.quantity) AS steps
   FROM samples s
   JOIN quantity_samples qs
